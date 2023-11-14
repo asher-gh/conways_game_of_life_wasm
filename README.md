@@ -1,6 +1,10 @@
 # Conway's Game of Life
-
 Exploring [WebAssembly][wasm] by building [Conway's Game of Life][gol].
+
+<div align="center">
+  <img src="https://github.com/asher-gh/conways_game_of_life_wasm/assets/74317567/9afbf808-719c-49c0-8947-8a4c3cf90ea0"
+    width=400px>
+</div>
 
 [wasm]: https://webassembly.org/
 [gol]: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life

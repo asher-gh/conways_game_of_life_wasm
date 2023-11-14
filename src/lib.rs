@@ -1,5 +1,6 @@
 mod utils;
-
+use fixedbitset::FixedBitSet;
+use js_sys::Math;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -19,10 +20,45 @@ pub enum GameCell {
 pub struct Universe {
     width: u32,
     height: u32,
-    cells: Vec<GameCell>,
+    cells: FixedBitSet,
 }
 
+#[wasm_bindgen]
 impl Universe {
+    pub fn new() -> Self {
+        let width = 128;
+        let height = 128;
+
+        let size = (width * height) as usize;
+        let mut cells = FixedBitSet::with_capacity(size);
+
+        for i in 0..size {
+            cells.set(i, Math::random() < 0.4)
+        }
+
+        Universe {
+            width,
+            height,
+            cells,
+        }
+    }
+
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    pub fn cells(&self) -> *const u32 {
+        self.cells.as_slice().as_ptr()
+    }
+
+    // pub fn render(&self) -> String {
+    // self.to_string()
+    // }
+
     fn get_index(&self, row: u32, column: u32) -> usize {
         (row * self.width + column) as usize
     }
@@ -45,7 +81,44 @@ impl Universe {
 
         count
     }
+
+    pub fn tick(&mut self) {
+        let mut next = self.cells.clone();
+
+        for row in 0..self.height {
+            for col in 0..self.width {
+                let idx = self.get_index(row, col);
+                let cell = self.cells[idx];
+                next.set(
+                    idx,
+                    match (cell, self.live_neighbor_count(row, col)) {
+                        (true, x) if x < 2 => false,
+                        (true, 2 | 3) => true,
+                        (true, x) if x > 3 => false,
+                        (false, 3) => true,
+                        (otherwise, _) => otherwise,
+                    },
+                )
+            }
+        }
+
+        self.cells = next;
+    }
 }
+
+// impl fmt::Display for Universe {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         for line in self.cells.as_slice().chunks(self.width as usize) {
+//             for &cell in line {
+//                 let symbol = if cell == GameCell::Dead { '◻' } else { '◼' };
+//                 write!(f, "{symbol}")?;
+//             }
+//             write!(f, "\n")?;
+//         }
+//
+//         Ok(())
+//     }
+// }
 
 #[wasm_bindgen]
 pub fn greet(name: &str) {

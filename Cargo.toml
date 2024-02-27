@@ -19,7 +19,7 @@ wasm-bindgen = "0.2.84"
 # code size when deploying.
 console_error_panic_hook = { version = "0.1.7", optional = true }
 js-sys = "0.3.65"
-fixedbitset = "0.4.2"
+fixedbitset = "0.5.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"
